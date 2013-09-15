@@ -137,88 +137,6 @@ define(function (require) {
          * @type {Object}
          * @property {boolean} disabled 控件的不可用状态
          * @property {(string | HTMLElement)} main 控件渲染容器
-         * @property {boolean|string=} arrow 提示框的箭头参数，默认为false，不带箭头
-         * 可以初始化时通过指定arrow属性为“1”开启箭头模式，也可以手动指定箭头方向：
-         * tr | rt | rb | br | bl | lb | lt | tl | tc | rc | bc | lc
-         * 也可通过在 triggers 上设置 data-tooltips来指定
-         * @property {number=} hideDelay 提示框消失的延迟时间，默认值为Tip.HIDE_DELAY
-         * @property {string=} mode 提示的显示模式，over|click|auto。默认为over
-         * @property {string=} title 提示的标题信息，默认为null
-         * @property {string} content 提示的内容信息
-         * @property {string} prefix 控件class前缀，同时将作为main的class之一
-         * @property {string} triggers 自动绑定本控件功能的class
-         * @property {string} flag 标识作为trigger的class
-         * @property {Object.<string, number>} offset 浮层显示的偏移量
-         * @property {number} offset.x x 轴方向偏移量
-         * @property {number} offset.y y轴方向偏移量
-         * @property {string} tpl 浮层内部HTML模板
-         */
-        /*
-        options: {
-
-            // 提示框的不可用状态，默认为false。处于不可用状态的提示框不会出现。
-            disabled: false,
-
-            // 控件渲染主容器
-            main: '',
-
-            // 提示框的箭头参数，默认为false，不带箭头
-            // 可以初始化时通过指定arrow属性为“1”开启箭头模式
-            // 也可以手动指定箭头方向：
-            // tr | rt | rb | br | bl | lb | lt | tl | tc | rc | bc | lc。
-            // 也可通过在 triggers 上设置 data-tooltips来指定
-            arrow: false,
-
-            // 提示框消失的延迟时间，默认值为Tip.HIDE_DELAY
-            hideDelay: 0,
-
-            // 提示的显示模式，over|click|auto。默认为over
-            mode: 'over',
-
-            // 提示的标题信息，默认为null
-            title: null,
-
-            // 提示的内容信息
-            content: '',
-
-            // 控件class前缀，同时将作为main的class之一
-            prefix: 'ecl-ui-tip',
-
-            // 自动绑定本控件功能的class
-            triggers: 'tooltips',
-
-            // 标识作为trigger的class
-            flag: '_ecui_tips',
-
-            // 浮层显示的偏移量
-            offset: {
-
-                // x 轴方向偏移量
-                x: 0,
-
-                // y 轴方向偏移量
-                y: 0
-            },
-
-            // 控件模板
-            tpl: ''
-            + '<div class="{prefix}-arrow {prefix}-arrow-top">'
-            +   '<em></em>'
-            +   '<ins></ins>'
-            + '</div>'
-            + '<div class="{prefix}-title"></div>'
-            + '<div class="{prefix}-body"></div>'
-        },
-        */
-
-        /**
-         * 控件配置项
-         * 
-         * @private
-         * @name module:Tip#options
-         * @type {Object}
-         * @property {boolean} disabled 控件的不可用状态
-         * @property {(string | HTMLElement)} main 控件渲染容器
          * @property {string} prefix 控件class前缀，同时将作为main的class之一
          * @property {string} flag 标识作为trigger的class
          * @property {string} triggers 自动绑定本控件功能的触发器
@@ -268,12 +186,8 @@ define(function (require) {
          */
         init: function (options) {
             options = this.setOptions(options);
-            //options.hideDelay = options.hideDelay < 0
-            //    ? Tip.HIDE_DELAY : options.hideDelay;
 
             this.disabled  = options.disabled;
-            //this.title     = options.title;
-            //this.content   = options.content;
 
             var prefix = options.prefix;
             var main   = this.main = document.createElement('div');
@@ -282,16 +196,6 @@ define(function (require) {
             main.innerHTML  = options.tpl.replace(/{prefix}/g, prefix);
             main.style.left = '-2000px';
 
-            //this.events = {
-            //    over: {
-            //        on: 'mouseenter', 
-            //        un: 'mouseleave'
-            //    },
-            //    click: {
-            //        on: 'click',
-            //        un: 'click'
-            //    }
-            //}[options.mode];
             this.events = {
                 over: {
                     on: 'mouseenter', 
@@ -342,25 +246,6 @@ define(function (require) {
                     }
                 );
 
-                //if (this.options.mode === 'over') {
-                //    T.on(
-                //        main,
-                //        'mouseenter',
-                //        function () {
-                //            me.clear();
-                //        }
-                //    );
-
-                //    T.on(
-                //        main,
-                //        'mouseleave',
-                //        function () {
-                //            me.clear();
-                //            me.timer = setTimeout(me.hide, options.hideDelay);
-                //        }
-                //    );
-                //}
-
                 var elements = this.elements = {};
                 var prefix = options.prefix + '-';
 
@@ -371,7 +256,7 @@ define(function (require) {
                     }
                 );
 
-                //this.addTriggers(options.triggers);
+                this.addTriggers(options.triggers);
 
             }
 
@@ -382,36 +267,6 @@ define(function (require) {
             return this;
         },
 
-        /**
-         * 增加触发 tips 的 DOM
-         * 
-         * @public
-         * @param {(string | HTMLElement | HTMLCollection | Array)} triggers 
-         * className/dom节点/dom集合或dom节点数组
-         */
-        /*
-        addTriggers: function (triggers) {
-            var me      = this;
-            var options = this.options;
-            var events  = this.events;
-            var flag    = options.flag;
-
-            this.triggers = typeof triggers === 'string'
-                ? T.q(options.triggers)
-                : (triggers.length ? triggers : [triggers]);
-
-            if (events) {
-                T.each(
-                    this.triggers,
-                    function (trigger) {
-                        T.addClass(trigger, flag);
-                        T.on(trigger, events.on, me.onShow);
-                    }
-                );
-            }
-        },
-        */
-        
         /**
          * 增加触发 tips 的触发器
          *
@@ -541,7 +396,9 @@ define(function (require) {
 
             if (
                 main === target
-                    || ~T.array.indexOf(this.triggers, target)
+                    //|| ~T.array.indexOf(this.triggers, target)
+                    || this.current === target
+                    || DOM.contains(this.current, target)
                     || DOM.contains(main, target)
             ) {
                 return;
@@ -558,6 +415,13 @@ define(function (require) {
          */
         onMouseenter: function(e) {
             this.clear();
+            
+            var trigger = this.curTrigger;
+            var events = this.events[trigger.mode];
+            if (events && this.current) {
+                T.on(this.current, events.on, this.onShow);
+                T.un(this.current, events.un, this.onHide);
+            }
         },
 
         /**
@@ -618,6 +482,7 @@ define(function (require) {
              * @property {DOMEvent} e 事件源对象
              */
             this.fire('beforeShow', {target: target, event: e});
+
             if (typeof trigger.onBeforeShow === 'function') {
                 trigger.onBeforeShow.call(this, {target: target, event: e});
             }
@@ -662,10 +527,12 @@ define(function (require) {
 
             T.on(window, 'resize', this.onResize);
 
-            elements.title.innerHTML = trigger.title || this.title;
-            elements.body.innerHTML  = trigger.content || this.content;
+            var title = trigger.title || this.title;
+            var content = trigger.content || this.content;
+            elements.title.innerHTML = title;
+            elements.body.innerHTML  = content;
 
-            T[trigger.title ? 'show' : 'hide'](elements.title);
+            T[title ? 'show' : 'hide'](elements.title);
 
             if (!trigger.arrow) {
                 T.hide(elements.arrow);
