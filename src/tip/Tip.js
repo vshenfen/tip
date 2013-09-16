@@ -556,6 +556,10 @@ define(function (require) {
              */
             this.fire('show', {target: target});
 
+            if (typeof trigger.onShow === 'function') {
+                trigger.onShow.call(this, {target: target});
+            }
+
         },
 
         /**
@@ -595,6 +599,10 @@ define(function (require) {
              * @event module:Tip#hide
              */
             this.fire('hide');
+
+            if (typeof trigger.onHide === 'function') {
+                trigger.onHide.call(this, {target: target});
+            }
         },
 
         /**

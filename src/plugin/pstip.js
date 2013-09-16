@@ -93,7 +93,7 @@ define( function(require){
             +    'height=16 width=16 '// title="商家权益保障"
             +    'src="#{img}">'
             +    '#{text}'
-            +'</li>',
+            + '</li>',
 
         // 举报模板
         rightBottom : ''
@@ -580,6 +580,9 @@ define( function(require){
                     mode: 'over',
                     arrow: '1',
                     clazz: 'efc-cert',
+                    onShow: function(obj) {
+                        onShow(obj, this);
+                    },
                     onBeforeShow: function (obj) {
                         onBeforeShow(obj, this);
                     }
