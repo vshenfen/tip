@@ -575,13 +575,12 @@ define( function(require){
                     }).render();
                 */
                 }
-                var Tip = require('../tip/main');
-                Tip.add({
+                var Tip = require('../tip/main').create();
+                Tip.addTriggers({
                     mode: 'over',
                     arrow: '1',
                     clazz: 'efc-cert',
                     onBeforeShow: function (obj) {
-
                         onBeforeShow(obj, this);
                     }
                 });

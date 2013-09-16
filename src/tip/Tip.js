@@ -57,6 +57,15 @@ define(function (require) {
     };
 
     /**
+     * 提示框出现的延迟时间，单位毫秒
+     * 
+     * @public
+     * @const
+     * @type {number}
+     */
+    Tip.SHOW_DELAY = 200;
+
+    /**
      * 提示框消失的延迟时间，单位毫秒
      * 
      * @public
@@ -75,6 +84,7 @@ define(function (require) {
      * 可以初始化时通过指定arrow属性为“1”开启箭头模式，也可以手动指定箭头方向：
      * tr | rt | rb | br | bl | lb | lt | tl | tc | rc | bc | lc
      * 也可通过在 triggers 上设置 data-tooltips来指定
+     * @property {number=} showDelay 提示框出现的延迟时间，默认值为Tip.SHOW_DELAY
      * @property {number=} hideDelay 提示框消失的延迟时间，默认值为Tip.HIDE_DELAY
      * @property {string=} mode 提示的显示模式，over|click|auto。默认为over
      * @property {string=} title 提示的标题信息，默认为null
@@ -93,8 +103,11 @@ define(function (require) {
         // 也可通过在 triggers 上设置 data-tooltips来指定
         arrow: false,
 
+        // 提示框出现的延迟时间，默认值为Tip.SHOW_DELAY
+        showDelay: Tip.SHOW_DELAY,
+
         // 提示框消失的延迟时间，默认值为Tip.HIDE_DELAY
-        hideDelay: 200,
+        hideDelay: Tip.HIDE_DELAY,
 
         // 提示的显示模式，over|click|auto。默认为over
         mode: 'over',
@@ -225,7 +238,6 @@ define(function (require) {
             var me      = this;
             var main    = this.main;
             var options = this.options;
-            var events  = this.events;
 
             if (!this.rendered) {
                 this.rendered = true;
@@ -260,10 +272,6 @@ define(function (require) {
 
             }
 
-            //if (!events && this.triggers) {
-            //    this.show(this.triggers[0]);
-            //}
-
             return this;
         },
 
@@ -293,12 +301,11 @@ define(function (require) {
                     T.each(trigger.clazz, function (clazz) {
                         if (!me.triggers[clazz]) {
                             me.triggersClazz.push(clazz);
+                            T.each(T.q(clazz), function (el) {
+                                T.addClass(el, me.options.flag);
+                                T.on(el, events[trigger.mode].on, me.onShow);
+                            });
                         }
-                        T.each(T.q(clazz), function (el) {
-                            T.addClass(el, me.options.flag);
-                            //todo: 清除原有this.triggers中含有的冲突配置
-                            T.on(el, events[trigger.mode].on, me.onShow);
-                        });
                         me.triggers[clazz] = trigger;
                     });
                 }
@@ -364,6 +371,7 @@ define(function (require) {
          */
         clear: function () {
             clearTimeout(this.timer);
+            clearTimeout(this.showTimer);
             clearTimeout(this.resizeTimer);
         },
 
@@ -396,7 +404,6 @@ define(function (require) {
 
             if (
                 main === target
-                    //|| ~T.array.indexOf(this.triggers, target)
                     || this.current === target
                     || DOM.contains(this.current, target)
                     || DOM.contains(main, target)
@@ -487,7 +494,10 @@ define(function (require) {
                 trigger.onBeforeShow.call(this, {target: target, event: e});
             }
 
-            this.show(target);
+            var me = this;
+            this.showTimer = setTimeout(function () {
+                me.show(target);
+            }, trigger.showDelay);
         },
 
 
@@ -517,7 +527,6 @@ define(function (require) {
          * @fires module:Tip#show 显示事件
          */
         show: function (target) {
-            var options  = this.options;
             var elements = this.elements;
             var trigger = this.curTrigger;
  
