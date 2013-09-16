@@ -313,6 +313,36 @@ define(function (require) {
         },
 
         /**
+         * 删除指定的触发 tips 的触发器
+         *
+         * @public
+         * @param {(string | Array.<string>)} clazz
+         */
+        removeTriggers: function (clazz) {
+            var clazz = T.lang.isArray(clazz) ? clazz : [clazz];
+            var me = this;
+            var events = this.events;
+            
+            T.each(clazz, function (clazz) {
+                if (typeof clazz !== 'string') {
+                    return ;
+                }
+
+                var trigger = me.triggers[clazz];
+                if (!events[trigger.mode]) {
+                    return ;
+                }
+
+                T.array.remove(me.triggersClazz, clazz);
+                T.each(T.q(clazz), function (el) {
+                    T.removeClass(el, me.options.flag);
+                    T.un(el, events[trigger.mode].on, me.onShow);
+                    T.un(el, events[trigger.mode].un, me.onHide);
+                });
+            });
+        },
+
+        /**
          * 获取当前触发tip显示的trigger
          *
          * @private

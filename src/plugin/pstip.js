@@ -587,7 +587,6 @@ define( function(require){
                         onBeforeShow(obj, this);
                     }
                 });
-
             });
 
     }
